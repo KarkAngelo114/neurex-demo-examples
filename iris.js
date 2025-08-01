@@ -1,8 +1,9 @@
-const {Neurex, CsvDataHandler, Interpreter, OneHotEncoded, split_dataset, ClassificationMetrics, IntegerLabeling} = require('neurex');
+const {Neurex, CsvDataHandler, Interpreter, Layers, OneHotEncoded, split_dataset, ClassificationMetrics, IntegerLabeling} = require('neurex');
 
 const model = new Neurex();
 const csv = new CsvDataHandler();
 const interpreter = new Interpreter();
+const layer = new Layers();
 
 const dataset = csv.read_csv('iris-dataset.csv');
 const extract_column = csv.extractColumn('iris', dataset);
@@ -18,11 +19,13 @@ model.configure({
     learning_rate: 0.0001
 });
 
-model.inputShape(X_train);
-model.construct_layer("relu", 32);
-model.construct_layer("relu", 16);
-model.construct_layer("relu", 8);
-model.construct_layer("softmax", 3);
+model.sequentialBuild([
+    layer.inputShape({features: 4}),
+    layer.connectedLayer("relu", 8),
+    layer.connectedLayer("relu", 5),
+    layer.connectedLayer("softmax", 3)
+]);
+model.build();
 
 model.train(X_train, Y_train, "sparse_categorical_cross_entropy", 5000, 32);
 model.saveModel('sparse_test3');

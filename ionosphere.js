@@ -1,9 +1,10 @@
-const {Neurex, CsvDataHandler, MinMaxScaler, Interpreter, BinaryLabeling, split_dataset, ClassificationMetrics} = require('neurex');
+const {Neurex, CsvDataHandler, MinMaxScaler, Interpreter, Layers, BinaryLabeling, split_dataset, ClassificationMetrics} = require('neurex');
 
 const model = new Neurex();
 const csv = new CsvDataHandler();
 const scaler = new MinMaxScaler();
 const interpreter = new Interpreter();
+const layer = new Layers();
 
 const dataset = csv.read_csv('ionosphere.csv');
 const extracted_column = csv.extractColumn("y", dataset);
@@ -24,12 +25,15 @@ model.configure({
     randMax: 0.001
 });
 
-model.inputShape(normalized_X_train);
-model.construct_layer("relu", 10);
-model.construct_layer("relu", 5);
-model.construct_layer("relu", 5);
-model.construct_layer("relu", 3);
-model.construct_layer("sigmoid", 1);
+model.sequentialBuild([
+    layer.inputShape({features: 20}),
+    layer.connectedLayer("relu", 10),
+    layer.connectedLayer("relu", 5),
+    layer.connectedLayer("relu", 5),
+    layer.connectedLayer("relu", 3),
+    layer.connectedLayer("sigmoid", 1),
+]);
+model.build();
 
 model.train(normalized_X_train, Y_train, "binary_cross_entropy",5000,12);
 model.saveModel('ionosphere');
