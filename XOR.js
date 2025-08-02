@@ -47,9 +47,9 @@ const trainY = [
 ];
 
 // 5. Train the model
-// Use binary cross-entropy loss, train for 500 epochs, and use a batch size of 2
+// Use binary cross-entropy loss, train for 1000 epochs, and use a batch size of 2
 // The task will be automatically inferred as 'binary_classification'
-model.train(trainX, trainY, 'binary_cross_entropy', 500, 2);
+model.train(trainX, trainY, 'binary_cross_entropy', 1000, 2);
 
 // 6. Make predictions after training
 const predictions = model.predict(trainX);
